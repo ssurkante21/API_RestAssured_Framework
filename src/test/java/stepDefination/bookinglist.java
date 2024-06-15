@@ -2,7 +2,7 @@ package stepDefination;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
-
+import static org.hamcrest.Matchers.*;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -19,7 +19,6 @@ import resources.Utilities;
 public class bookinglist extends Utilities {
 	public RequestSpecification res;
 	ResponseSpecification resspec;
-	public Response response;
 	public String tokenAccess;
 	TestBuild data=new TestBuild();
 	TextContextSetup tcs;
@@ -27,35 +26,52 @@ public class bookinglist extends Utilities {
 		this.tcs=tcs;
 	}
 	
-	
-	@Given("Enter credentials as {string} {string}")
-	public void enter_credentials_as(String username, String password) throws Exception {
-		res=given().spec(requestSpecificatio())
-				  .body(data.LoginCredentials(username, password));
+	@Given("^CreateBookingAPI Payload (.+) (.+) (.+) (.+) (.+) (.+) (.+)$")
+	public void create_booking_api_payload(String firstname, String lastname, Integer price, Boolean depositpaid, String checkin, String checkout, String additionalneeds) throws Exception {
+		
+		res=given().spec(requestSpecificatio()).header("Authorization",tcs.tokenAccess).body(data.Bookingdata(firstname,  lastname,  price,  depositpaid,  checkin,  checkout,  additionalneeds));
+			
 	}
 
-	@When("User calls {string} with post http request")
-	public void user_calls_with_http_request(String resource) {
+	@When("User calls {string} with http request as {string} method")
+	public void user_calls_with_http_request_as_method(String resource, String string2) {
 		ResourcesOfAPI apiResource=ResourcesOfAPI.valueOf(resource);	
 		 resspec =new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();	
-		 response = res.when().post(apiResource.getResources());
+		 tcs.bookingresponse = res.when().post(apiResource.getResources());
 	}
 
-	@Then("the API call is success with status code {int}")
-	public void the_api_call_is_success_with_status_code(Integer int1) {
-		assertEquals(response.getStatusCode(),200);
+	@Then("^Verify if data created is same as posted (.+) (.+) (.+) (.+) (.+) (.+) (.+)$")
+	public void verify_if_data_created_is_same_as_posted(String firstname, String lastname, Integer totalprice, Boolean depositpaid, String checkin, String checkout, String additionalneeds) throws Exception {
+		/*tcs.bookingresponse.then().assertThat().body("bookingdates.checkin", equalTo(checkin),
+		"bookingdates.checkout", equalTo(checkout),
+		"firstname", equalTo(firstname),
+		"lastname", equalTo(lastname),
+		"additionalneeds", equalTo(additionalneeds),
+		"totalprice", equalTo(totalprice),
+		"depositpaid", equalTo(depositpaid)			
+				);
+		
+		
+		
+		*/
+		assertEquals(getJsonPath(tcs.bookingresponse,"booking.firstname"),firstname);
+	    assertEquals(getJsonPath(tcs.bookingresponse,"booking.lastname"),lastname);
+	    assertEquals(getJsonPath(tcs.bookingresponse,"booking.totalprice"),Integer.toString(totalprice));
+	    assertEquals(getJsonPath(tcs.bookingresponse,"booking.depositpaid"),String. valueOf(depositpaid));
+	    assertEquals(getJsonPath(tcs.bookingresponse,"booking.bookingdates.checkin"),checkin);
+	    assertEquals(getJsonPath(tcs.bookingresponse,"booking.bookingdates.checkout"),checkout);
+	    assertEquals(getJsonPath(tcs.bookingresponse,"booking.additionalneeds"),additionalneeds);
+	    
 	}
 
-	@Then("{string} in response body is {string}")
-	public void in_response_body_is(String key, String expected) {
-		if(key.equalsIgnoreCase("reason"))
-		assertEquals(getJsonPath(response,key),expected);
-		if(key.equalsIgnoreCase("token")) {
-			 tcs.tokenAccess=getJsonPath(response,key);
-				System.out.println(tokenAccess);	
-		}
-			System.out.println(tokenAccess);	
-			
-			
+	@Then("Capture bookingid created")
+	public void capture_bookingid_created() throws Exception {
+		 tcs.bookingid=getJsonPath(tcs.bookingresponse,"bookingid");
+		 System.out.println(tcs.bookingid);
+		
 	}
+
+
+	
+	
 }

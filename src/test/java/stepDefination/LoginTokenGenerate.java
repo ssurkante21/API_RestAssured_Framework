@@ -13,14 +13,22 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import resources.ResourcesOfAPI;
 import resources.TestBuild;
+import resources.TextContextSetup;
 import resources.Utilities;
 
 public class LoginTokenGenerate extends Utilities {
 	public RequestSpecification res;
 	ResponseSpecification resspec;
 	public Response response;
-	public String tokenAccess;
+	
+	public TextContextSetup tcs;
 	TestBuild data=new TestBuild();
+	
+	public LoginTokenGenerate(TextContextSetup tcs) {
+		this.tcs=tcs;
+	}
+	
+	
 	@Given("Enter credentials as {string} {string}")
 	public void enter_credentials_as(String username, String password) throws Exception {
 		res=given().spec(requestSpecificatio())
@@ -36,18 +44,23 @@ public class LoginTokenGenerate extends Utilities {
 
 	@Then("the API call is success with status code {int}")
 	public void the_api_call_is_success_with_status_code(Integer int1) {
+		if(tcs.bookingresponse !=null) {
+			
+		}
+		if(response !=null) {
 		assertEquals(response.getStatusCode(),200);
 	}
+		}
 
 	@Then("{string} in response body is {string}")
-	public void in_response_body_is(String key, String expected) {
+	public void in_response_body_is(String key, String expected) throws Exception   {
 		if(key.equalsIgnoreCase("reason"))
 		assertEquals(getJsonPath(response,key),expected);
 		if(key.equalsIgnoreCase("token")) {
-			 tokenAccess=getJsonPath(response,key);
-				System.out.println(tokenAccess);	
+			 tcs.tokenAccess=getJsonPath(response,key);
+				System.out.println(tcs.tokenAccess);	
 		}
-			System.out.println(tokenAccess);	
+				
 			
 			
 	}

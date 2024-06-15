@@ -14,7 +14,13 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 public class Utilities {
-	public static RequestSpecification req;
+	
+	public Utilities() {
+		
+	}
+	
+	
+	public static RequestSpecification req,tokenreq;
 	public  RequestSpecification requestSpecificatio() throws Exception {
 		
 		  if(req==null) {
@@ -27,6 +33,19 @@ public class Utilities {
 	}
 		  return req;
 	}
+	public  RequestSpecification requestSpecificationeithtoken() throws Exception {
+		
+		  if(tokenreq==null) {
+		PrintStream log=new PrintStream(new FileOutputStream("logging.txt"));
+		tokenreq =new RequestSpecBuilder().setBaseUri(getGlobalValue("baseUrl"))
+				 .addFilter(RequestLoggingFilter.logRequestTo(log))
+				 .addFilter(ResponseLoggingFilter.logResponseTo(log)) //to logging we need to create fileoutput stram and after adding query parameter we can add to log file
+				   .setContentType(ContentType.JSON).build();
+		   return tokenreq;
+	}
+		  return tokenreq;
+	}
+	
 	private String getGlobalValue(String key) throws Exception {
 		Properties prop =new Properties();
 		FileInputStream fis=new FileInputStream("C:\\Users\\Reddy\\eclipse-workspace\\RestfulBroker\\src\\test\\java\\resources\\Global.properties");

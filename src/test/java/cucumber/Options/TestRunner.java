@@ -5,7 +5,13 @@ import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions; 
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features="src/test/java/featureFile",plugin="json:target/jsonReports/cucumber-reports.json",glue={"stepDefination"})
+@CucumberOptions(
+		features="src/test/java/featureFile",
+		plugin="json:target/jsonReports/cucumber-reports.json",
+		glue={"stepDefination"},
+		tags= "@regression",
+		monochrome=true
+		)
 public class TestRunner {
 
 }

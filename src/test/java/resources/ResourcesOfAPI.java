@@ -1,7 +1,8 @@
 package resources;
 
 public enum ResourcesOfAPI {
-	GenerateToken("/auth");
+	GenerateToken("/auth"),
+	CreateBookingAPI("/booking");
 	 
 	 private String resourcs;
 	

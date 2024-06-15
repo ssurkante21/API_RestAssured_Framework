@@ -6,12 +6,13 @@ private String lastname;
 private int totalprice;
 private boolean depositpaid;
 private String additionalneeds;
-private BookingDates BookingDates;
-public BookingDates getBookingDates() {
-	return BookingDates;
+private BookingDates bookingdates;
+
+public BookingDates getBookingdates() {
+	return bookingdates;
 }
-public void setBookingDates(BookingDates bookingDates) {
-	BookingDates = bookingDates;
+public void setBookingdates(BookingDates bookingdates) {
+	this.bookingdates = bookingdates;
 }
 public String getFirstname() {
 	return firstname;

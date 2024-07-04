@@ -26,18 +26,32 @@ public class bookinglist extends Utilities {
 		this.tcs=tcs;
 	}
 	
-	@Given("^CreateBookingAPI Payload (.+) (.+) (.+) (.+) (.+) (.+) (.+)$")
-	public void create_booking_api_payload(String firstname, String lastname, Integer price, Boolean depositpaid, String checkin, String checkout, String additionalneeds) throws Exception {
+	@Given("^Booking {string} Payload (.+) (.+) (.+) (.+) (.+) (.+) (.+)$")
+	public void create_booking_api_payload(String resource,String firstname, String lastname, Integer price, Boolean depositpaid, String checkin, String checkout, String additionalneeds) throws Exception {
 		
+		if(resource.equalsIgnoreCase("CreateBookingAPI")) {
 		res=given().spec(requestSpecificatio()).header("Authorization",tcs.tokenAccess).body(data.Bookingdata(firstname,  lastname,  price,  depositpaid,  checkin,  checkout,  additionalneeds));
-			
+		}
+		if(resource.equalsIgnoreCase("updateBookingAPI")) {
+			res=given().spec(requestSpecificatio()).header("Authorization",tcs.tokenAccess).pathParam("id", tcs.bookingid).body(data.Bookingdata(firstname,  lastname,  price,  depositpaid,  checkin,  checkout,  additionalneeds));
+
+		}
+		
 	}
 
 	@When("User calls {string} with http request as {string} method")
-	public void user_calls_with_http_request_as_method(String resource, String string2) {
+	public void user_calls_with_http_request_as_method(String resource, String apimethod) {
 		ResourcesOfAPI apiResource=ResourcesOfAPI.valueOf(resource);	
-		 resspec =new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();	
+		if(apimethod.equalsIgnoreCase("POST")) {
+		resspec =new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();	
 		 tcs.bookingresponse = res.when().post(apiResource.getResources());
+		}
+		if(apimethod.equalsIgnoreCase("PUT")) {
+			resspec =new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();	
+			 tcs.bookingresponse = res.when().put(apiResource.getResources());
+			
+		}
+		
 	}
 
 	@Then("^Verify if data created is same as posted (.+) (.+) (.+) (.+) (.+) (.+) (.+)$")
